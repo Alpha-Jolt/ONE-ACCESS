@@ -1,0 +1,8 @@
+hook:
+  namespace: tag
+  source_path: src/
+  depends: [login_main, multi_sig_wallet]
+  actions:
+    tag: class(multi_sig_wallet)
+config:
+  example_api_url: ''
