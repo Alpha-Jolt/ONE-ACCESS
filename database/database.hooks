@@ -1,0 +1,7 @@
+hook:
+  namespace: database
+  source_path: src/
+  depends: [contract]
+  actions: null
+config:
+  example_api_url: ''
