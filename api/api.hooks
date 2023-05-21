@@ -1,0 +1,8 @@
+hook:
+  namespace: api
+  source_path: src/
+  depends: ["database"]
+  actions:
+      api: ""
+config:
+  example_api_url: ''
