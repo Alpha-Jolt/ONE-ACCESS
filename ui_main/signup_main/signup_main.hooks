@@ -1,0 +1,8 @@
+hook:
+  namespace: signup_main
+  source_path: src/
+  depends: []
+  actions: 
+    signup: signup.html
+config:
+  example_api_url: ''

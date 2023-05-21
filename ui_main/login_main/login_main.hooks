@@ -1,0 +1,8 @@
+hook:
+  namespace: login.html
+  source_path: src/
+  depends: [signup_main]
+  actions: 
+    login: "login.html"
+config:
+  example_api_url: ''

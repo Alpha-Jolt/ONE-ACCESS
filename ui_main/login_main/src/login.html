@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Fingerprint Authentication</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script>
+    // Wait for the page to load
+    $(document).ready(() => {
+      // Fetch the challenge from the server
+      $.post('/fetch-challenge', (data) => {
+        const { challenge } = data;
+
+        // Request fingerprint authentication from the browser
+        const publicKeyCredential = window.PublicKeyCredential || window.webkitPublicKeyCredential;
+        const publicKey = {
+          challenge: Uint8Array.from(atob(challenge), c => c.charCodeAt(0)),
+          allowCredentials: [{
+            type: 'public-key',
+            id: Uint8Array.from(atob(challenge), c => c.charCodeAt(0))
+          }]
+        };
+
+        navigator.credentials.get({ publicKey })
+          .then((assertion) => {
+            // Convert the assertion to base64 string
+            const assertionStr = btoa(String.fromCharCode.apply(null, new Uint8Array(assertion.response.clientDataJSON)));
+
+            // Send the assertion back to the server for verification
+            $.post('/verify-assertion', { assertion: assertionStr }, (data) => {
+              // Handle the response from the server
+              console.log(data);
+            });
+          })
+          .catch((error) => {
+            // Handle errors during authentication
+            console.log(error);
+          });
+      });
+    });
+    
+  </script>
+</head>
+<body>
+  <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ENTER YOUR USERNAME</title>
+
+    <link rel="stylesheet" href="./login.css" />
+  </head>
+  <body>
+    <div class="signup-form">
+      <div class="form-content">
+        <h2>ENTER YOUR USERNAME</h2>
+        <form id="form" class="form-div">
+            <input type="text" id="username" name="username" placeholder="Username" required />
+            <!-- <button onclick="handleSubmit()" class="btn submit-btn">Submit</button> -->
+            <button class="bttn-pill bttn-md bttn-primary btn" type="submit" >Submit</button>
+        </form>
+
+        <div id="fingerprint-verification" class="fingerprint-verification">
+          <img class="finger-img" src="C:\Users\Asus\Desktop\AJ\VS Code\Sign Up\baseline_fingerprint_black_48.png" alt="fingerprint-verification" />
+          <p>Verify Your Fingerprint</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="./login.js"></script>
+  </body>
+</html>
+</body>
+</html>
