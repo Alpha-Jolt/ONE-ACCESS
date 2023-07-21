@@ -1,8 +1,0 @@
-hook:
-  namespace: multi_sig_wallet
-  source_path: src/
-  depends: [MSW]
-  actions:
-    contract: "contracts"
-config:
-  example_api_url: ''
