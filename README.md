@@ -1,4 +1,3 @@
-<!--
 # ONE-ACCESS
 
 One Access is a Single Identity System which eliminates the old Password Authentication method with Biometrical Recognition on a Decentralized network.
