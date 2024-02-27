@@ -1,53 +1,49 @@
 import time
 from pynput import keyboard
 import logging
+import pyautogui
+
+
 
 class logger:
-    #singleton instantiation
-    #Global Access for Logger
     _instance = None
 
     def __new__(cls):
         if not cls._instance:
             cls._instance = super(logger, cls).__new__(cls)
             cls._instance.keylogger_instance = Keylogger()
+            cls._instance.mouse_motion = Mouse_manipulation()
         return cls._instance
-    
-    #To add new user instances and check wheather the data goes under same directory
-    #code still has vulnerabilities
-    #Last edited 23-02-2024 9:00 PM
 
-    log_file = "keylogger.log"
+    log_file = "keystrokes.log"
     logging.basicConfig(filename=log_file, level=logging.DEBUG, format='%(asctime)s  %(message)s')
-    #logging_instance = logging.getLogger("Keylogger_Logger")
+    logging_instance = logging.getLogger("Keystroke_Logger")
 
+#last edited 28-02-2024 01:30 AM
+#mouse manipulation exit error. ESC key not working still
 
-
-class Keylogger(logger):
+class Keylogger:
     def __init__(self):
         self.log = []
 
     def on_press(self, key):
         try:
-            # Record the timestamp and the key that was pressed
             timestamp = time.time()
             key_str = key.char if hasattr(key, 'char') else str(key)
-
             self.log.append((timestamp, key_str))
 
-            # Record the key pressed
-            logging.info(f"Key pressed: {key_str}")
+            logger._instance.logging_instance.info(f"Key pressed: {key_str}")
 
         except Exception as e:
             print(f"Error: {e}")
             # Handle special keys
             key_str = str(key).replace("'", "") # Clear Representation of Special Keys
-            logging.info(f"key pressed: {key_str}")
+
+            logger._instance.logging_instance.info(f"key pressed: {key_str}")
 
 
     def on_release(self, key):
         if key == keyboard.Key.esc:
-            # Stop listener and print the collected keystrokes
             return False
 
     def start_logging(self):
@@ -58,10 +54,38 @@ class Keylogger(logger):
         for timestamp, key in self.log:
             print(f"{timestamp}: {key}")
 
+
+class Mouse_manipulation:
+    def track_mouse_movement(self):
+        start_time = time.time()
+        last_x, last_y = pyautogui.position()
+
+        while True:
+            current_x, current_y = pyautogui.position()
+            
+            if (current_x, current_y) != (last_x, last_y):
+                elapsed_time = time.time() - start_time
+                    
+                #print(f"Time: {elapsed_time:.2f}s, X: {current_x}, Y: {current_y}")
+
+                start_time = time.time()
+                last_x, last_y = current_x, current_y
+
+            time.sleep(0.1)  # Adjust the sleep duration based on your requirement
+            
+            logger._instance.logging_instance.info(f"X: {current_x}, Y: {current_y}")
+    
+    def on_release(self, key):
+        if key == keyboard.Key.esc:
+            return False
+
+
 if __name__ == "__main__":
-    #logger_instance = logger() # Class not called (Acquiring Attribute error at start_logging method)
-    keylogger = Keylogger()
+    logger_instance = logger()
+    keylogger_instance = logger_instance.keylogger_instance
+    mouse_motion = logger_instance.mouse_motion
     print("Press ESC to stop logging.")
-    print("Keylogger Intiated...")
-    keylogger.start_logging()
-    keylogger.print_log()
+    print("Keytroke Dynamics Intiated...")
+    keylogger_instance.start_logging()
+    keylogger_instance.print_log()
+    mouse_motion = mouse_motion.track_mouse_movement()
